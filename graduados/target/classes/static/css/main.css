@@ -1,0 +1,16 @@
+.error {
+    display: none;
+}
+
+/* styles.css */
+
+.header-custom {
+    background-color: #880e4f ; /* Reemplaza esto con el valor de $red-600 */
+    color: #fff; /* Cambia el color del texto según sea necesario */
+  }
+
+.footer-custom {
+    background-color: #49082B; /* Reemplaza #3498db con el color que desees */
+    color: #fff; /* Cambia el color del texto según sea necesario */
+  }
+  

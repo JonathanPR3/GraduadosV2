@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="/css/main.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom header-custom">
+    <div class="container">
+        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <img src="/img/logo_ipn_st.png" alt="Logo del IPN" class="me-2">
+            <span class="fs-4 text-white">Registro de nuevo usuario</span>
+        </a>
+        <a href="/admin" class="btn btn-success">Dashboard</a>
+        <ul class="nav nav-pills text-white">
+            <li class="nav-item text-white">
+                <form action="/cerrar-sesion" method="post">
+                    <input type="submit" class="btn btn-danger" value="Cerrar Sesión">
+                </form>
+            </li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <h1>Creación generada por: [nombreUsuario]</h1>
+        <ul>
+            <li>Administrador de la dependencia: [dependencia]</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <form action="/registrar" method="POST" id="formACT">
+            <label for="CURP" class="form-label">Introduzca un CURP:</label>
+            <input type="text" name="usuarioCURP" placeholder="CURP" class="form-control" id="CURP">
+            <div id="emailHelp" class="form-text">Recuerde insertar su CURP completo</div>
+            <br>
+
+            <label for="NOMBRE" class="form-label">Introduzca un nombre:</label>
+            <input type="text" name="usuarioNOMBRE" placeholder="NOMBRE" class="form-control" id="NOMBRE">
+            <br>
+
+            <label for="CATEGORIA" class="form-label">Introduzca una categoría para el usuario:</label>
+            <select class="form-select" name="usuarioCATEGORIA" aria-label="Default select example">
+                <option selected>Docente</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Docente">Docente</option>
+                <option value="Administrativo">Administrativo</option>
+            </select>
+            <br>
+
+            <label for="DEPENDENCIA" class="form-label">Introduzca una dependencia:</label>
+            <input type="text" name="usuarioDEPENDENCIA" placeholder="DEPENDENCIA" class="form-control" id="DEPENDENCIA">
+            <br>
+
+            <label for="DISTINCION" class="form-label">Introduzca el nombre de la distinción:</label>
+            <input type="text" name="usuarioDISTINCION" placeholder="DISTINCION" class="form-control" id="DISTINCION">
+            <br>
+
+            <button type="submit" class="btn btn-primary" id="btnCrear">Crear nuevo usuario</button>
+            <a href="/admin" class="btn btn-danger">Cancelar</a>
+        </form>
+    </div>
+</main>
+
+<footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top footer">
+    <p class="col-md-4 mb-0">Instituto Politécnico Nacional - ESCOM IPN</p>
+    <a href="#" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+        <img src="/img/Logo_IPN.png" alt="Logo del IPN" width="90" height="90" class="me-2">
+    </a>
+    <ul class="nav col-md-4 justify-content-end">
+        <li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Inicio</a></li>
+        <li class="nav-item"><a href="/registro" class="nav-link px-2 text-body-secondary">Registro</a></li>
+        <li class="nav-item"><a href="/acerca-de" class="nav-link px-2 text-body-secondary">Acerca de</a></li>
+    </ul>
+</footer>
+
+<script src="/js/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+<script src="/js/main.js"></script>
+<script src="/js/registro.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
