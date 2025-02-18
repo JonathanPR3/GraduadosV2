@@ -1,1 +1,6 @@
+com\example\graduados\dto\LoginRequest.class
 com\example\graduados\GraduadosApplication.class
+com\example\graduados\repository\AdminRepository.class
+com\example\graduados\repository\GraduadoRepository.class
+com\example\graduados\models\Graduado.class
+com\example\graduados\models\admin.class

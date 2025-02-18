@@ -24,13 +24,16 @@
     <div class="container">
         <h1 class="center">Inicio de sesión para pre-registro.</h1>
         <h6>El pre-registro es exclusivo para los alumnos proximos a graduarse del CECyT 2 - Instituto Politécnico Nacional. <br><br> Si usted entrará en el proceso, introduzca su CURP en el campo siguiente:</h6>
-        <form action="" method="POST" id="formlg">
+        <form action="/auth/login" method="POST" id="formlg">
             <div class="mb-3">
                 <label for="CURP" class="form-label">Introduzca su CURP:</label>
-                <input type="text" name="usuarioCURP" placeholder="CURP" class="form-control" id="CURP" >
+                <input type="text" name="curp" placeholder="CURP" class="form-control" id="CURP" >
                 <div id="emailHelp" class="form-text">Recuerde insertar su CURP completo</div>
             </div>
             <button type="submit" class="btn btn-primary" id="btnIngresar">Iniciar Sesión</button>
+            <p style="color: red;">[[${error}]]</p> <!-- Muestra el error si el CURP no existe -->
+
+            
         </form>
     </div>
 </main>

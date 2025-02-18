@@ -1,2 +1,7 @@
-C:\Users\jonit\OneDrive\Escritorio\graduados\src\main\java\com\example\graduados\GraduadosApplication.java
-C:\Users\jonit\OneDrive\Escritorio\graduados\src\main\java\com\example\graduados\MainController.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\controllers\MainController.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\dto\LoginRequest.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\GraduadosApplication.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\models\admin.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\models\Graduado.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\repository\AdminRepository.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\repository\GraduadoRepository.java
