@@ -1,5 +1,7 @@
 com\example\graduados\dto\LoginRequest.class
 com\example\graduados\GraduadosApplication.class
+com\example\graduados\controllers\MainController.class
+com\example\graduados\services\PdfService.class
 com\example\graduados\repository\AdminRepository.class
 com\example\graduados\repository\GraduadoRepository.class
 com\example\graduados\models\Graduado.class

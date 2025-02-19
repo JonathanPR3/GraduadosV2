@@ -24,7 +24,7 @@ public class Graduado {
     private String asiento;
 
     @Column(name = "acompanantes", nullable = false)
-    private boolean acompanantes;
+    private int acompanantes;
 
     @Column(name = "carrera", nullable = false, length = 100)
     private String carrera;
@@ -81,12 +81,12 @@ public class Graduado {
         this.asiento = asiento;
     }
 
-    public boolean isAcompanantes() {
+    public int isAcompanantes() {
         return acompanantes;
     }
 
-    public void setAcompanantes(boolean acompanantes) {
-        this.acompanantes = acompanantes;
+    public void setAcompanantes(int acompanantes2) {
+        this.acompanantes = acompanantes2;
     }
 
     public String getCarrera() {
@@ -103,5 +103,9 @@ public class Graduado {
 
     public void setGrupo(String grupo) {
         this.grupo = grupo;
+    }
+
+    public int getAcompanantes() {
+        return acompanantes;
     }
 }
