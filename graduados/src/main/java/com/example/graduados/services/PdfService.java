@@ -1,9 +1,7 @@
 package com.example.graduados.services;
 
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
 import com.example.graduados.models.Graduado;
 import org.springframework.stereotype.Service;
 
@@ -18,25 +16,56 @@ public class PdfService {
 
         try {
             // Crear el archivo PDF
-            PdfWriter.getInstance(document, new FileOutputStream("invitaciones.pdf"));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("invitaciones.pdf"));
+
+            // Cargar la imagen de fondo
+            Image fondo = Image.getInstance("src/main/resources/static/img/fondoinvitacion.png");
+            fondo.scaleToFit(PageSize.A4.getWidth(), PageSize.A4.getHeight());
+
+            // Registrar el evento para agregar el fondo en cada página
+            FondoPdfPageEventHelper eventHelper = new FondoPdfPageEventHelper(fondo);
+            writer.setPageEvent(eventHelper);
+
             document.open();
 
-            // Invitación del graduado
-            document.add(new Paragraph("Invitación para el Graduado"));
-            document.add(new Paragraph("Nombre: " + graduado.getNombre()));
-            document.add(new Paragraph("Carrera: " + graduado.getCarrera()));
-            document.add(new Paragraph("Grupo: " + graduado.getGrupo()));
-            document.add(new Paragraph("Opción de Titulación: " + graduado.getOpTitulacion()));
-            document.add(new Paragraph("----------------------------------------"));
+            // Fuentes personalizadas
+            Font tituloFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, Font.BOLD, BaseColor.WHITE);
+            Font contenidoFont = FontFactory.getFont(FontFactory.HELVETICA, 12, BaseColor.WHITE);
+
+            // Título de la invitación
+            Paragraph titulo = new Paragraph("Invitación para el Graduado", tituloFont);
+            titulo.setAlignment(Paragraph.ALIGN_CENTER);
+            document.add(titulo);
+
+            // Tabla con la información del graduado
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100);
+
+            table.addCell(new PdfPCell(new Paragraph("Nombre", contenidoFont)));
+            table.addCell(new PdfPCell(new Paragraph(graduado.getNombre(), contenidoFont)));
+
+            table.addCell(new PdfPCell(new Paragraph("Carrera", contenidoFont)));
+            table.addCell(new PdfPCell(new Paragraph(graduado.getCarrera(), contenidoFont)));
+
+            table.addCell(new PdfPCell(new Paragraph("Grupo", contenidoFont)));
+            table.addCell(new PdfPCell(new Paragraph(graduado.getGrupo(), contenidoFont)));
+
+            table.addCell(new PdfPCell(new Paragraph("Opción de Titulación", contenidoFont)));
+            table.addCell(new PdfPCell(new Paragraph(graduado.getOpTitulacion(), contenidoFont)));
+
+            document.add(table);
 
             // Salto de página para la siguiente invitación
             document.newPage();
 
             // Invitaciones de los acompañantes
             for (int i = 1; i <= numAcompanantes; i++) {
-                document.add(new Paragraph("Invitación para Acompañante " + i));
-                document.add(new Paragraph("Este es un acompañante del graduado: " + graduado.getNombre()));
-                document.add(new Paragraph("----------------------------------------"));
+                Paragraph tituloAcompanante = new Paragraph("Invitación para Acompañante " + i, tituloFont);
+                tituloAcompanante.setAlignment(Paragraph.ALIGN_CENTER);
+                document.add(tituloAcompanante);
+
+                Paragraph infoAcompanante = new Paragraph("Este es un acompañante del graduado: " + graduado.getNombre(), contenidoFont);
+                document.add(infoAcompanante);
 
                 // Salto de página para la siguiente invitación (excepto la última)
                 if (i < numAcompanantes) {
