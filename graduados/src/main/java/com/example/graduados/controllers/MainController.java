@@ -5,6 +5,7 @@ import com.example.graduados.models.Graduado;
 import com.example.graduados.repository.AdminRepository;
 import com.example.graduados.repository.GraduadoRepository;
 import com.example.graduados.services.PdfService;
+import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -38,8 +39,19 @@ public class MainController {
     private PdfService pdfService;
 
     @GetMapping("/")
-    public String index() {
-        return "index"; // Renderiza templates/index.html
+    public String index(HttpSession session, Model model) {
+        // Recuperar el graduado de la sesión (si existe)
+        Graduado graduado = (Graduado) session.getAttribute("user");
+
+        // Verificar si el usuario ya contestó el cuestionario
+        boolean cuestionarioContestado = false;
+        if (graduado != null) {
+            cuestionarioContestado = graduado.isAsistencia() || graduado.getAcompanantes() > 0;
+        }
+
+        // Pasar la información a la vista
+        model.addAttribute("cuestionarioContestado", cuestionarioContestado);
+        return "index";
     }
 
     @GetMapping("/inicio")
@@ -65,8 +77,22 @@ public class MainController {
     }
 
     @GetMapping("/admin")
-    public String admin() {
-        return "admin"; // Renderiza templates/admin.html
+    public String admin(HttpSession session, Model model) {
+        // Recuperar el admin de la sesión
+        admin admin = (admin) session.getAttribute("user");
+
+        if (admin == null) {
+            return "redirect:/"; // Redirigir al index si no hay sesión
+        }
+
+        // Pasar el nombre del admin a la vista
+        model.addAttribute("nombreUsuario", admin.getNombre());
+
+        // Obtener la lista de graduados para la tabla
+        List<Graduado> graduados = graduadoRepository.findAll();
+        model.addAttribute("graduados", graduados);
+
+        return "admin"; // Renderizar la página de admin
     }
 
     @PostMapping("/actualizar-datos")
