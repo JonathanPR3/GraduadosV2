@@ -8,6 +8,9 @@
     <link href="/css/main.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
     <script src="https://kit.fontawesome.com/f582f73715.js" crossorigin="anonymous"></script>
+
+    <!-- Librería para leer QR -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 </head>
 <body>
 <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom header-custom">
@@ -47,7 +50,7 @@
                     <th>ASISTENCIA</th>
                     <th>INVITADOS</th>
                     <th>PRESENTE</th>
-                    <th>Validar Invitación</th> <!-- Nueva columna -->
+                    <th>Validar Invitación</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,7 +67,6 @@
                         <a th:href="@{/editar/{id}(id=${graduado.id})}" class="btn btn-warning">Editar</a>
                     </td>
                     <td>
-                        <!-- Botón para validar QR -->
                         <button type="button" class="btn btn-primary btn-validar" data-bs-toggle="modal" data-bs-target="#modalValidar" data-id="${graduado.id}">
                             Validar
                         </button>
@@ -84,7 +86,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <textarea id="qrJsonInput" class="form-control" rows="8" placeholder="Pega aquí el JSON del QR"></textarea>
+        <!-- Contenedor para cámara -->
+        <div id="reader" style="width: 100%; height: 300px; margin-bottom: 15px;"></div>
+
+        <!-- Textarea para mostrar JSON escaneado -->
+        <textarea id="qrJsonInput" class="form-control" rows="6" placeholder="JSON del QR aparecerá aquí..." readonly></textarea>
+
         <div id="resultadoValidacion" class="mt-3"></div>
       </div>
       <div class="modal-footer">
@@ -114,7 +121,10 @@
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 
-<!-- Inicialización de DataTables -->
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script para DataTables y QR scanning -->
 <script>
     $(document).ready(function () {
         $('#example').DataTable({
@@ -123,17 +133,59 @@
             }
         });
 
-        // Evento para limpiar modal al abrir
-        $('#modalValidar').on('show.bs.modal', function () {
+        const html5QrCode = new Html5Qrcode("reader");
+
+        function onScanSuccess(decodedText, decodedResult) {
+            html5QrCode.stop().then(() => {
+                console.log("Cámara detenida.");
+            }).catch(err => {
+                console.error("Error al detener la cámara: ", err);
+            });
+
+            $('#qrJsonInput').val(decodedText);
+            // Auto validar si quieres
+            $('#btnValidarFirma').click();
+        }
+
+        function onScanFailure(error) {
+            // Opcional: console.warn(`Error de escaneo: ${error}`);
+        }
+
+        // Iniciar cámara al abrir modal
+        $('#modalValidar').on('shown.bs.modal', function () {
+            Html5Qrcode.getCameras().then(cameras => {
+                if (cameras && cameras.length) {
+                    var cameraId = cameras[0].id;
+                    html5QrCode.start(
+                        cameraId,
+                        { fps: 10, qrbox: 250 },
+                        onScanSuccess,
+                        onScanFailure
+                    ).catch(err => {
+                        console.error("Error iniciando cámara: ", err);
+                        alert("No se pudo iniciar la cámara: " + err);
+                    });
+                } else {
+                    alert("No se detectó cámara disponible.");
+                }
+            }).catch(err => {
+                console.error("Error obteniendo cámaras: ", err);
+                alert("Error accediendo a la cámara: " + err);
+            });
+        });
+
+        // Detener cámara al cerrar modal
+        $('#modalValidar').on('hidden.bs.modal', function () {
+            html5QrCode.stop().catch(() => {});
             $('#qrJsonInput').val('');
             $('#resultadoValidacion').html('');
         });
 
-        // Evento para validar firma al hacer click
+        // Validar firma con backend
         $('#btnValidarFirma').click(function () {
             let qrJson = $('#qrJsonInput').val();
             if (!qrJson) {
-                alert('Por favor pega el JSON del QR.');
+                alert('Por favor escanea un QR válido primero.');
                 return;
             }
 
@@ -156,8 +208,5 @@
         });
     });
 </script>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
