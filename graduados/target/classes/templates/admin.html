@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link href="/css/main.css" rel="stylesheet"> 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/css/main.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
     <script src="https://kit.fontawesome.com/f582f73715.js" crossorigin="anonymous"></script>
 </head>
@@ -14,7 +14,7 @@
     <div class="container d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <a href="#" class="text-dark text-decoration-none">
-                <img src="/img/logo_ipn_st.png" alt="Logo del IPN" class="me-2">
+                <img src="/img/logo_ipn_st.png" alt="Logo del IPN" class="me-2" />
                 <span class="fs-4 text-white">Dashboard de Galardonados IPN</span>
             </a>
         </div>
@@ -22,7 +22,7 @@
         <div class="d-flex align-items-center">
             <a href="/registrar" class="btn btn-success me-3">Registrar nuevo usuario</a>
             <form action="/cerrar-sesion" method="post">
-                <input type="submit" class="btn btn-danger" value="Cerrar Sesión">
+                <input type="submit" class="btn btn-danger" value="Cerrar Sesión" />
             </form>
         </div>
     </div>
@@ -35,7 +35,6 @@
 
     <div id="dataTableContainer" class="container">
         <h2>Tabla de usuarios galardonados</h2>
-        <!-- Tabla que se llenará con datos dinámicos -->
         <table id="example" class="display" style="width:100%">
             <thead>
                 <tr>
@@ -48,10 +47,10 @@
                     <th>ASISTENCIA</th>
                     <th>INVITADOS</th>
                     <th>PRESENTE</th>
+                    <th>Validar Invitación</th> <!-- Nueva columna -->
                 </tr>
             </thead>
             <tbody>
-                <!-- Llenar la tabla con datos dinámicos -->
                 <tr th:each="graduado : ${graduados}">
                     <td th:text="${graduado.asiento}"></td>
                     <td th:text="${graduado.nombre}"></td>
@@ -62,7 +61,13 @@
                     <td th:text="${graduado.asistencia ? 'Sí' : 'No'}"></td>
                     <td th:text="${graduado.acompanantes}"></td>
                     <td>
-                        <a th:href="@{/editar/{id}(id=${graduado.id})}" class="btn btn-warning">Editar</a>                    
+                        <a th:href="@{/editar/{id}(id=${graduado.id})}" class="btn btn-warning">Editar</a>
+                    </td>
+                    <td>
+                        <!-- Botón para validar QR -->
+                        <button type="button" class="btn btn-primary btn-validar" data-bs-toggle="modal" data-bs-target="#modalValidar" data-id="${graduado.id}">
+                            Validar
+                        </button>
                     </td>
                 </tr>
             </tbody>
@@ -70,11 +75,31 @@
     </div>
 </main>
 
+<!-- Modal para validar invitación -->
+<div class="modal fade" id="modalValidar" tabindex="-1" aria-labelledby="modalValidarLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalValidarLabel">Validar Invitación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <textarea id="qrJsonInput" class="form-control" rows="8" placeholder="Pega aquí el JSON del QR"></textarea>
+        <div id="resultadoValidacion" class="mt-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnValidarFirma" class="btn btn-success">Validar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top footer">
-    <p class="col-md-4 mb-0 ">Instituto Politécnico Nacional - ESCOM IPN</p>
+    <p class="col-md-4 mb-0">Instituto Politécnico Nacional - ESCOM IPN</p>
 
     <a href="#" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-        <img src="/img/Logo_IPN.png" alt="Logo del IPN" width="90" height="90" class="me-2">
+        <img src="/img/Logo_IPN.png" alt="Logo del IPN" width="90" height="90" class="me-2" />
     </a>
 
     <ul class="nav col-md-4 justify-content-end">
@@ -92,16 +117,47 @@
 <!-- Inicialización de DataTables -->
 <script>
     $(document).ready(function () {
-        // Inicializar DataTables en la tabla con ID "example"
         $('#example').DataTable({
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-MX.json" // Español
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-MX.json"
             }
+        });
+
+        // Evento para limpiar modal al abrir
+        $('#modalValidar').on('show.bs.modal', function () {
+            $('#qrJsonInput').val('');
+            $('#resultadoValidacion').html('');
+        });
+
+        // Evento para validar firma al hacer click
+        $('#btnValidarFirma').click(function () {
+            let qrJson = $('#qrJsonInput').val();
+            if (!qrJson) {
+                alert('Por favor pega el JSON del QR.');
+                return;
+            }
+
+            $.ajax({
+                url: '/admin/validar-firma',
+                method: 'POST',
+                contentType: 'application/json',
+                data: qrJson,
+                success: function (response) {
+                    if (response.valido) {
+                        $('#resultadoValidacion').html('<div class="alert alert-success">Firma válida. Invitación auténtica.</div>');
+                    } else {
+                        $('#resultadoValidacion').html('<div class="alert alert-danger">Firma inválida. Invitación no válida.</div>');
+                    }
+                },
+                error: function () {
+                    $('#resultadoValidacion').html('<div class="alert alert-warning">Error al validar. Intente de nuevo.</div>');
+                }
+            });
         });
     });
 </script>
 
 <!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

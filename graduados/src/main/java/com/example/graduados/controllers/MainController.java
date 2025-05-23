@@ -5,12 +5,23 @@ import com.example.graduados.models.Graduado;
 import com.example.graduados.repository.AdminRepository;
 import com.example.graduados.repository.GraduadoRepository;
 import com.example.graduados.services.PdfService;
+import com.example.graduados.services.KeyService;
+import com.example.graduados.services.QrService;
+import com.example.graduados.services.SignatureService;
+import com.example.graduados.dto.InvitacionDTO;
+
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.PrivateKey;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import java.awt.image.BufferedImage;
+
 
 
 @Controller
@@ -37,7 +50,16 @@ public class MainController {
 
     @Autowired
     private PdfService pdfService;
-
+    
+    @Autowired
+    private QrService qrService;    
+    
+    @Autowired
+    private KeyService keyService;   
+    
+    @Autowired
+    private SignatureService signatureService;
+    
     @GetMapping("/")
     public String index(HttpSession session, Model model) {
         // Recuperar el graduado de la sesión (si existe)
@@ -151,30 +173,59 @@ public class MainController {
         }
 
 
+        @GetMapping("/generar-pdf")
+public ResponseEntity<InputStreamResource> generarPdf(HttpSession session) throws Exception {
+    Graduado graduado = (Graduado) session.getAttribute("user");
+    if (graduado == null) {
+        return ResponseEntity.badRequest().build();
+    }
 
-    @GetMapping("/generar-pdf")
-    public ResponseEntity<InputStreamResource> generarPdf(HttpSession session) throws IOException {
-        // Recuperar el graduado de la sesión
-        Graduado graduado = (Graduado) session.getAttribute("user");
-        if (graduado == null) {
-            return ResponseEntity.badRequest().build(); // Redirigir si no hay sesión
-        }
+    // Crear DTO con solo datos necesarios para firmar y QR
+    InvitacionDTO dto = new InvitacionDTO(
+        graduado.getId(),
+        graduado.getCurp(),
+        graduado.getNombre(),
+        graduado.isAsistencia(),
+        graduado.getOpTitulacion(),
+        graduado.getAsiento(),
+        graduado.getAcompanantes(),
+        graduado.getCarrera(),
+        graduado.getGrupo()
+    );
 
-        // Generar las invitaciones en PDF
-        pdfService.generarInvitaciones(graduado, graduado.getAcompanantes());
+    // Serializar DTO a JSON
+    ObjectMapper mapper = new ObjectMapper();
+    String datosJson = mapper.writeValueAsString(dto);
 
-        // Preparar el archivo PDF para descargar
-        File file = new File("invitaciones.pdf");
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+    // Cargar clave privada
+    PrivateKey clavePrivada = keyService.cargarClavePrivada(graduado.getId());
 
-        // Configurar las cabeceras de la respuesta
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invitaciones.pdf");
+    // Firmar datos JSON
+    String firmaBase64 = signatureService.firmar(datosJson.getBytes(), clavePrivada);
 
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(resource);
-    }        
+    // Construir JSON final con datos y firma para QR
+    ObjectNode qrJson = mapper.createObjectNode();
+    qrJson.set("data", mapper.readTree(datosJson));
+    qrJson.put("signature", firmaBase64);
+    String qrContent = qrJson.toString();
+
+    // Generar QR
+    BufferedImage qrImage = qrService.generarQR(qrContent);
+
+    // Generar PDF con QR
+    byte[] pdfBytes = pdfService.generarInvitacionConQR(graduado, qrImage);
+
+    // Preparar respuesta HTTP con PDF
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invitacion.pdf");
+
+    return ResponseEntity.ok()
+            .headers(headers)
+            .contentLength(pdfBytes.length)
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(new InputStreamResource(new ByteArrayInputStream(pdfBytes)));
+}
+
+
+        
 }

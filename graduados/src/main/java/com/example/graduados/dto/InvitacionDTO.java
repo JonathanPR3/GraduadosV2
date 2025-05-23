@@ -1,47 +1,33 @@
-package com.example.graduados.models;
+package com.example.graduados.dto;
 
-import jakarta.persistence.*;
+public class InvitacionDTO {
 
-@Entity
-@Table(name = "graduados")
-public class Graduado {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column(name = "curp", nullable = false, length = 18)
     private String curp;
-
-    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
-
-    @Column(name = "asistencia", nullable = false)
     private boolean asistencia;
-
-    @Column(name = "op_titulacion", nullable = false, length = 50)
     private String opTitulacion;
-
-    @Column(name = "asiento", length = 10)
     private String asiento;
-
-    @Column(name = "acompanantes", nullable = false)
     private int acompanantes;
-
-    @Column(name = "carrera", nullable = false, length = 100)
     private String carrera;
-
-    @Column(name = "grupo", nullable = false, length = 10)
     private String grupo;
 
-    // Nuevos campos para las claves ECDSA
-    @Column(name = "clave_publica_ecdsa", columnDefinition = "TEXT")
-    private String clavePublicaEcdsa;
+    // Constructor completo
+    public InvitacionDTO(int id, String curp, String nombre, boolean asistencia,
+                         String opTitulacion, String asiento, int acompanantes,
+                         String carrera, String grupo) {
+        this.id = id;
+        this.curp = curp;
+        this.nombre = nombre;
+        this.asistencia = asistencia;
+        this.opTitulacion = opTitulacion;
+        this.asiento = asiento;
+        this.acompanantes = acompanantes;
+        this.carrera = carrera;
+        this.grupo = grupo;
+    }
 
-    @Column(name = "clave_privada_ecdsa", columnDefinition = "TEXT")
-    private String clavePrivadaEcdsa;
-
-    // Getters y Setters
-
+    // Getters y setters
     public int getId() {
         return id;
     }
@@ -112,21 +98,5 @@ public class Graduado {
 
     public void setGrupo(String grupo) {
         this.grupo = grupo;
-    }
-
-    public String getClavePublicaEcdsa() {
-        return clavePublicaEcdsa;
-    }
-
-    public void setClavePublicaEcdsa(String clavePublicaEcdsa) {
-        this.clavePublicaEcdsa = clavePublicaEcdsa;
-    }
-
-    public String getClavePrivadaEcdsa() {
-        return clavePrivadaEcdsa;
-    }
-
-    public void setClavePrivadaEcdsa(String clavePrivadaEcdsa) {
-        this.clavePrivadaEcdsa = clavePrivadaEcdsa;
     }
 }

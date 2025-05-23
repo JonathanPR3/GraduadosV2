@@ -1,4 +1,6 @@
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\controllers\AdminController.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\controllers\MainController.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\dto\InvitacionDTO.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\dto\LoginRequest.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\GraduadosApplication.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\models\admin.java
@@ -6,4 +8,8 @@ C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\co
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\repository\AdminRepository.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\repository\GraduadoRepository.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\services\FondoPdfPageEventHelper.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\services\KeyGeneratorService.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\services\KeyService.java
 C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\services\PdfService.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\services\QrService.java
+C:\Users\jonit\OneDrive\Documentos\GitHub\GraduadosV2\graduados\src\main\java\com\example\graduados\services\SignatureService.java
