@@ -75,7 +75,7 @@ public class PdfService {
             // Salto de página para la siguiente invitación
             document.newPage();
 
-            // Invitaciones de los acompañantes
+          /*  // Invitaciones de los acompañantes
             for (int i = 1; i <= numAcompanantes; i++) {
                 // Agregar espacio en blanco para mover el contenido más abajo
                 for (int j = 0; j < 17; j++) {
@@ -96,7 +96,7 @@ public class PdfService {
                     document.newPage();
                 }
             }
-
+            */ 
             document.close();
         } catch (DocumentException | IOException e) {
             e.printStackTrace();
@@ -168,7 +168,7 @@ public class PdfService {
             // Salto de página para acompañantes
             document.newPage();
 
-            // Invitaciones para acompañantes
+          /*   // Invitaciones para acompañantes
             for (int i = 1; i <= graduado.getAcompanantes(); i++) {
                 for (int j = 0; j < 17; j++) {
                     document.add(new Paragraph(" "));
@@ -186,7 +186,7 @@ public class PdfService {
                     document.newPage();
                 }
             }
-
+            */
             document.close();
 
             return baos.toByteArray();

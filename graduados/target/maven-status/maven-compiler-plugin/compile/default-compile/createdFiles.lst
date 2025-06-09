@@ -1,8 +1,15 @@
 com\example\graduados\dto\LoginRequest.class
 com\example\graduados\repository\AdminRepository.class
+com\example\graduados\services\FondoPdfPageEventHelper.class
 com\example\graduados\models\Graduado.class
 com\example\graduados\GraduadosApplication.class
+com\example\graduados\controllers\AdminController.class
 com\example\graduados\controllers\MainController.class
 com\example\graduados\services\PdfService.class
+com\example\graduados\services\KeyService.class
 com\example\graduados\repository\GraduadoRepository.class
+com\example\graduados\dto\InvitacionDTO.class
 com\example\graduados\models\admin.class
+com\example\graduados\services\KeyGeneratorService.class
+com\example\graduados\services\SignatureService.class
+com\example\graduados\services\QrService.class

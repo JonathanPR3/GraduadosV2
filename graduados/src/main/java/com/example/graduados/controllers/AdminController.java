@@ -21,6 +21,7 @@ public class AdminController {
     @Autowired
     private SignatureService signatureService;
 
+
     @PostMapping("/validar-firma")
     public Map<String, Object> validarFirma(@RequestBody String qrJson) throws Exception {
         Map<String, Object> response = new HashMap<>();
@@ -48,7 +49,17 @@ public class AdminController {
             boolean valido = signatureService.verificarFirma(datosJson.getBytes(), signatureBase64, clavePublicaBase64);
 
             response.put("valido", valido);
-            response.put("mensaje", valido ? "Firma válida. Invitación auténtica." : "Firma inválida.");
+
+            if (valido) {
+                // Actualizar asistencia y guardar en BD
+                if (!graduado.isAsistencia()) {  // Solo actualizar si aún no estaba marcado
+                    graduado.setAsistencia(true);
+                    graduadoRepository.save(graduado);
+                }
+                response.put("mensaje", "Firma válida. Invitación auténtica y asistencia registrada.");
+            } else {
+                response.put("mensaje", "Firma inválida.");
+            }
 
         } catch (Exception e) {
             response.put("valido", false);
@@ -57,4 +68,5 @@ public class AdminController {
 
         return response;
     }
+
 }
