@@ -161,8 +161,11 @@ public class PdfService {
             imgBaos.close();
 
             Image qrItextImage = Image.getInstance(qrBytes);
-            qrItextImage.scaleToFit(150, 150);
-            qrItextImage.setAbsolutePosition(PageSize.A4.getWidth() - 170, 50); // Ajusta posición (derecha abajo)
+            qrItextImage.scaleToFit(250, 250);
+            qrItextImage.setAbsolutePosition(
+                (PageSize.A4.getWidth() - qrItextImage.getScaledWidth()) / 2,
+                170 // Ajusta esto si quieres moverlo más arriba o abajo
+            );
             document.add(qrItextImage);
 
             // Salto de página para acompañantes
