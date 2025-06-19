@@ -25,7 +25,7 @@
         </div>
 
         <div class="d-flex align-items-center">
-            <a href="/registrar" class="btn btn-success me-3">Registrar nuevo usuario</a>
+            <!--<a href="/registrar" class="btn btn-success me-3">Registrar nuevo usuario</a>-->
             <form action="/cerrar-sesion" method="post">
                 <input type="submit" class="btn btn-danger" value="Cerrar Sesión" />
             </form>
@@ -135,120 +135,88 @@
 
         // Inicializar el lector de QR
         const html5QrCode = new Html5Qrcode("reader");
+    function onScanSuccess(decodedText, decodedResult) {
+        html5QrCode.stop().then(() => {
+            console.log("Cámara detenida");
+        }).catch(console.error);
+        
+        $('#qrJsonInput').val(decodedText);
+        validarQR(decodedText);
+    }
 
-        // Función que se llama cuando se escanea el QR correctamente
-        function onScanSuccess(decodedText, decodedResult) {
-            // Detener la cámara después de obtener el QR
-            html5QrCode.stop().then(() => {
-                console.log("Cámara detenida.");
-            }).catch(err => {
-                console.error("Error al detener la cámara: ", err);
-            });
-
-            // Mostrar el contenido del QR en el textarea (opcional, pero aquí lo usamos para validación)
-            $('#qrJsonInput').val(decodedText);
-
-            // Parsear el JSON del QR para extraer los datos relevantes
-            const qrData = JSON.parse(decodedText);
-            const data = qrData.data;
-
-            // Mostrar los datos relevantes del QR (como nombre, carrera, etc.)
-            $('#resultadoValidacion').html(`
-                <strong>Nombre:</strong> ${data.nombre} <br>
-                <strong>Acompañantes:</strong> ${data.acompanantes} <br>
-                <strong>Grupo:</strong> ${data.grupo} <br>
-                <strong>Carrera:</strong> ${data.carrera} <br>
-            `);
-
-            // Auto validar al escanear (opcional)
-            $('#btnValidarFirma').click();
-        }
-
-        // Función que se llama cuando hay un error al escanear
-        function onScanFailure(error) {
-            console.warn(`Error al escanear: ${error}`);
-        }
-
-        // Iniciar cámara al abrir el modal para validar QR
-        $('#modalValidar').on('shown.bs.modal', function () {
-            Html5Qrcode.getCameras().then(cameras => {
-                if (cameras && cameras.length) {
-                    var cameraId = cameras[0].id; // Usar la primera cámara disponible
-                    // Iniciar la lectura de QR
-                    html5QrCode.start(
-                        cameraId,
-                        { fps: 10, qrbox: 250 },
-                        onScanSuccess,
-                        onScanFailure
-                    ).catch(err => {
-                        console.error("Error iniciando cámara: ", err);
-                        alert("No se pudo iniciar la cámara: " + err);
-                    });
-                } else {
-                    alert("No se detectó cámara disponible.");
+    function validarQR(qrDataCifrado) {
+        $.ajax({
+            url: '/admin/validar-qr',
+            method: 'POST',
+            contentType: 'text/plain',
+            data: qrDataCifrado,
+            success: function(response) {
+                if (response.error) {
+                    Swal.fire('Error', response.error, 'error');
+                    return;
                 }
-            }).catch(err => {
-                console.error("Error obteniendo cámaras: ", err);
-                alert("Error accediendo a la cámara: " + err);
-            });
-        });
-
-        // Detener la cámara cuando se cierra el modal
-        $('#modalValidar').on('hidden.bs.modal', function () {
-            html5QrCode.stop().catch(() => {}); // Detener la cámara
-            $('#qrJsonInput').val(''); // Limpiar el contenido del QR en el textarea
-            $('#resultadoValidacion').html(''); // Limpiar el área de resultados
-        });
-
-        // Validar la firma con el backend cuando se hace clic en el botón "Validar"
-        $('#btnValidarFirma').click(function () {
-            let qrJson = $('#qrJsonInput').val(); // Obtener el JSON del QR
-            if (!qrJson) {
-                // Mostrar advertencia si no hay JSON para validar
-                Swal.fire({
-                    icon: 'warning',
-                    title: '¡Atención!',
-                    text: 'Por favor escanea un QR válido primero.',
-                });
-                return;
+                
+                const data = response.datos;
+                $('#resultadoValidacion').html(`
+                    <div class="alert alert-success">
+                        <h5>Datos validados:</h5>
+                        <p><strong>Nombre:</strong> ${data.nombre}</p>
+                        <p><strong>Carrera:</strong> ${data.carrera}</p>
+                        <p><strong>Grupo:</strong> ${data.grupo}</p>
+                        <p><strong>Asistencia:</strong> ${data.asistencia ? 'Confirmada' : 'Pendiente'}</p>
+                    </div>
+                `);
+                
+                Swal.fire('Éxito', 'QR validado correctamente', 'success');
+            },
+            error: function(xhr) {
+                let errorMsg = xhr.responseJSON?.error || 'Error al validar el QR';
+                Swal.fire('Error', errorMsg, 'error');
             }
-
-            // Hacer la solicitud AJAX al backend para validar la firma
-            $.ajax({
-                url: '/admin/validar-firma',
-                method: 'POST',
-                contentType: 'application/json',
-                data: qrJson, // Enviar el JSON del QR
-                success: function (response) {
-                    if (response.valido) {
-                        // Si la firma es válida, mostrar éxito con SweetAlert2
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: 'Firma válida. Invitación auténtica.',
-                        }).then(() => {
-                            // Aquí puedes realizar otras acciones si es necesario
-                            // Actualizar el campo de asistencia o hacer otras modificaciones
-                        });
-                    } else {
-                        // Si la firma es inválida, mostrar un error con SweetAlert2
-                        Swal.fire({
-                            icon: 'error',
-                            title: '¡Error!',
-                            text: 'Firma inválida. Invitación no válida.',
-                        });
-                    }
-                },
-                error: function () {
-                    // Si hay un error en la solicitud AJAX
-                    Swal.fire({
-                        icon: 'error',
-                        title: '¡Error!',
-                        text: 'No se pudo validar la invitación. Intente de nuevo.',
-                    });
-                }
-            });
         });
+    }
+
+    function onScanFailure(error) {
+        console.warn(`Error al escanear: ${error}`);
+    }
+
+    $('#modalValidar').on('shown.bs.modal', function () {
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras && cameras.length) {
+                const cameraId = cameras[0].id;
+                html5QrCode.start(
+                    cameraId,
+                    { fps: 10, qrbox: 250 },
+                    onScanSuccess,
+                    onScanFailure
+                ).catch(err => {
+                    console.error("Error iniciando cámara: ", err);
+                    Swal.fire('Error', 'No se pudo iniciar la cámara: ' + err, 'error');
+                });
+            } else {
+                Swal.fire('Error', 'No se detectó cámara disponible', 'error');
+            }
+        }).catch(err => {
+            console.error("Error obteniendo cámaras: ", err);
+            Swal.fire('Error', 'Error accediendo a la cámara: ' + err, 'error');
+        });
+    });
+
+    $('#modalValidar').on('hidden.bs.modal', function () {
+        html5QrCode.stop().catch(() => {});
+        $('#qrJsonInput').val('');
+        $('#resultadoValidacion').html('');
+    });
+
+    $('#btnValidarFirma').click(function() {
+        const qrData = $('#qrJsonInput').val();
+        if (qrData) {
+            validarQR(qrData);
+        } else {
+            Swal.fire('Advertencia', 'Escanee un QR primero', 'warning');
+        }
+    });
+
     });
 </script>
 

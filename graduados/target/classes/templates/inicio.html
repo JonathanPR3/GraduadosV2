@@ -45,7 +45,7 @@
     <br>
 
     <h3 id="mensajeVacio" style="text-align: center;" th:if="${!contestado}">Por favor, rellene el siguiente formulario para considerar su asistencia</h3>
-    <h3 id="mensajeContestado" style="text-align: center;" th:if="${contestado}">El formulario se ha contestado.<br>Puede generar sus invitaciones a continuación.</h3>
+    <h3 id="mensajeContestado" style="text-align: center;" th:if="${contestado}"><br>Puede generar sus invitaciones a continuación.</h3>
 
     <!-- Formulario de actualización -->
     <div id="formularioAsistencia" th:unless="${contestado}">

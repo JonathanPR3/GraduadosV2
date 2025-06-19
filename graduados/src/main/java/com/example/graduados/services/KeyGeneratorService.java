@@ -43,4 +43,14 @@ public class KeyGeneratorService {
 
         return keyPair;
     }
+
+    // KeyGeneratorService.java - Añadir este método
+    public String generateAesKey() {
+        SecureRandom secureRandom = new SecureRandom();
+        byte[] key = new byte[32]; // 256 bits
+        secureRandom.nextBytes(key);
+        return Base64.getEncoder().encodeToString(key);
+    }
+
+
 }

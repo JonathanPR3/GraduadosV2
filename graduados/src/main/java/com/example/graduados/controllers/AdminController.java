@@ -1,11 +1,16 @@
 package com.example.graduados.controllers;
 
 import com.example.graduados.models.Graduado;
+import com.example.graduados.models.admin; // Asegúrate de importar tu modelo admin
 import com.example.graduados.repository.GraduadoRepository;
+import com.example.graduados.repository.AdminRepository; // Necesitarás este repositorio
 import com.example.graduados.services.SignatureService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,23 +22,35 @@ public class AdminController {
 
     @Autowired
     private GraduadoRepository graduadoRepository;
+    
+    @Autowired
+    private AdminRepository adminRepository; // Inyecta el repositorio de admin
 
     @Autowired
     private SignatureService signatureService;
 
-
     @PostMapping("/validar-firma")
-    public Map<String, Object> validarFirma(@RequestBody String qrJson) throws Exception {
+    public ResponseEntity<Map<String, Object>> validarFirma(
+            @RequestBody String qrJson,
+            HttpSession session) {
+        
         Map<String, Object> response = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
 
+        // 1. Verificar sesión de administrador
+        admin admin = (admin) session.getAttribute("user");
+        if (admin == null) {
+            response.put("mensaje", "Acceso denegado. Debe iniciar sesión como administrador.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+
         try {
+            // 2. Procesar la validación (tu lógica existente)
             JsonNode root = mapper.readTree(qrJson);
             JsonNode dataNode = root.get("data");
             String signatureBase64 = root.get("signature").asText();
 
             int idGraduado = dataNode.get("id").asInt();
-
             Graduado graduado = graduadoRepository.findById(idGraduado)
                 .orElseThrow(() -> new Exception("Graduado no encontrado"));
 
@@ -41,18 +58,20 @@ public class AdminController {
             if (clavePublicaBase64 == null) {
                 response.put("valido", false);
                 response.put("mensaje", "Clave pública no disponible.");
-                return response;
+                return ResponseEntity.ok(response);
             }
 
             String datosJson = mapper.writeValueAsString(dataNode);
-
-            boolean valido = signatureService.verificarFirma(datosJson.getBytes(), signatureBase64, clavePublicaBase64);
+            boolean valido = signatureService.verificarFirma(
+                datosJson.getBytes(), 
+                signatureBase64, 
+                clavePublicaBase64
+            );
 
             response.put("valido", valido);
 
             if (valido) {
-                // Actualizar asistencia y guardar en BD
-                if (!graduado.isAsistencia()) {  // Solo actualizar si aún no estaba marcado
+                if (!graduado.isAsistencia()) {
                     graduado.setAsistencia(true);
                     graduadoRepository.save(graduado);
                 }
@@ -61,12 +80,12 @@ public class AdminController {
                 response.put("mensaje", "Firma inválida.");
             }
 
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
             response.put("valido", false);
             response.put("mensaje", "Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        return response;
     }
-
 }

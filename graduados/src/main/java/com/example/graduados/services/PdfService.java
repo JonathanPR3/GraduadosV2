@@ -74,29 +74,6 @@ public class PdfService {
 
             // Salto de página para la siguiente invitación
             document.newPage();
-
-          /*  // Invitaciones de los acompañantes
-            for (int i = 1; i <= numAcompanantes; i++) {
-                // Agregar espacio en blanco para mover el contenido más abajo
-                for (int j = 0; j < 17; j++) {
-                    document.add(new Paragraph(" ")); // Agrega espacios en blanco
-                }
-
-                Paragraph tituloAcompanante = new Paragraph("Invitación para Acompañante " + i, tituloFont);
-                tituloAcompanante.setAlignment(Paragraph.ALIGN_CENTER);
-                document.add(tituloAcompanante);
-                document.add(space);
-
-
-                Paragraph infoAcompanante = new Paragraph("Este es un acompañante del graduado: " + graduado.getNombre(), contenidoFont);
-                document.add(infoAcompanante);
-
-                // Salto de página para la siguiente invitación (excepto la última)
-                if (i < numAcompanantes) {
-                    document.newPage();
-                }
-            }
-            */ 
             document.close();
         } catch (DocumentException | IOException e) {
             e.printStackTrace();
@@ -170,26 +147,6 @@ public class PdfService {
 
             // Salto de página para acompañantes
             document.newPage();
-
-          /*   // Invitaciones para acompañantes
-            for (int i = 1; i <= graduado.getAcompanantes(); i++) {
-                for (int j = 0; j < 17; j++) {
-                    document.add(new Paragraph(" "));
-                }
-
-                Paragraph tituloAcompanante = new Paragraph("Invitación para Acompañante " + i, tituloFont);
-                tituloAcompanante.setAlignment(Paragraph.ALIGN_CENTER);
-                document.add(tituloAcompanante);
-                document.add(new Paragraph(" "));
-
-                Paragraph infoAcompanante = new Paragraph("Este es un acompañante del graduado: " + graduado.getNombre(), contenidoFont);
-                document.add(infoAcompanante);
-
-                if (i < graduado.getAcompanantes()) {
-                    document.newPage();
-                }
-            }
-            */
             document.close();
 
             return baos.toByteArray();
